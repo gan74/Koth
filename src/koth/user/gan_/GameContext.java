@@ -61,9 +61,10 @@ public class GameContext {
 	public Set<Pawn> getEnemies() {
 		Set<Pawn> pawns = new TreeSet<>();
 		for (Pawn p : game.getPawns()) {
-			if (p.getTeam() != team) {
+			if (p.getTeam() != team && p.getHealth() > 0 && !game.isVoid(p.getLocation())) {
 				pawns.add(p);
 			}
+		
 		}
 		return pawns;
 	}
@@ -78,7 +79,9 @@ public class GameContext {
 	}
 	
 	public Move goToward(Vector a, Vector b) {
-		List<Vector> moves = path(a, b, game.getPawns());
+		/*List<Vector> moves = path(a, b, game.getPawns());
+		ArrayList<Vector> m2 = new ArrayList<>();
+		m2.addAll(moves);
 		if(!moves.isEmpty()) {
 			Vector v = a;
 			while(v.equals(a) && !moves.isEmpty()) {
@@ -88,33 +91,14 @@ public class GameContext {
 			if(!moves.isEmpty()) {
 				return goTo(a, v).getOpposite();
 			}
-		}
-		if(game.isVoid(b)) {
-			return Move.None;
-		}
-		return Move.fromDirection(a.sub(b)).getOpposite();
-	}
-	
-	public List<Vector> path(Vector beg, Vector end) {
-		return pathObstacles(beg, end, new HashSet<Vector>());
-	}
-	
-	public List<Vector> path(Vector beg, Vector end, Set<Pawn> obstacles) {
-		Set<Vector> obs = new HashSet<>();
-		for(Pawn p : obstacles) {
-			obs.add(p.getLocation());
-		}
-		return pathObstacles(beg, end, obs);
-	}
-	
-	public float getCorrectionFactor(Pawn pawn, Move move) {
-		/*if(pawn.getLocation().add(move).equals(getPawnData(pawn).getLastPosition())) {
-			return 1;
 		}*/
-		return 0;
+		for(Move m : path(a, b, game.getPawns())) {
+			return m;
+		}
+		return Move.None;//Move.fromDirection(a.sub(b)).getOpposite();
 	}
 	
-	public List<Vector> pathObstacles(Vector beg, Vector end, Set<Vector> obstacles) {
+	public Path pathObstacles(Vector beg, Vector end, Set<Vector> obstacles) {
 		class PathData
 		{
 			public PathData(Vector po, PathData par) {
@@ -131,8 +115,14 @@ public class GameContext {
 			public PathData parent;
 			public int weight;
 		}
+		if(game.isVoid(beg)) {
+			System.err.println("Starting point in void");
+		}
+		if(game.isVoid(end)) {
+			System.err.println("Ending point in void");
+		}
 		if(end.equals(beg)) {
-			return new ArrayList<Vector>();
+			return Path.emptyPath();
 		}
 		obstacles = Utils.removed(obstacles, beg, end);
 		Map<Vector, PathData> map = new HashMap<>();
@@ -140,7 +130,7 @@ public class GameContext {
 		opened.add(new PathData(beg));
 		while(true) {
 			if(opened.isEmpty()) {
-				return new ArrayList<Vector>();
+				return Path.emptyPath();
 			}
 			PathData current = null;
 			for(PathData c : opened) {
@@ -153,13 +143,14 @@ public class GameContext {
 			for(Vector dir : Utils.shuffled(Utils.dirs)) {
 				Vector pos = current.pos.add(dir);
 				if(pos.equals(end)) {
-					List<Vector> positions = new ArrayList<>();
+					ArrayList<Vector> positions = new ArrayList<>();
 					positions.add(end);
 					while(current != null) {
 						positions.add(current.pos);
 						current = current.parent;
 					}
-					return positions;
+					Utils.reverse(positions);
+					return new Path(positions);
 				}
 				if(!game.isVoid(pos) && !obstacles.contains(pos)) {
 					PathData pd = map.get(pos);
@@ -174,23 +165,44 @@ public class GameContext {
 				}
 			}
 		}
-		
 	}
 	
-	public List<PredictedAction> killActions(Set<Pawn> targets) {
-		List<PredictedAction> actions = new ArrayList<>();
+	public Path path(Vector beg, Vector end) {
+		return pathObstacles(beg, end, new HashSet<Vector>());
+	}
+	
+	public Path path(Vector beg, Vector end, Set<Pawn> obstacles) {
+		Set<Vector> obs = new HashSet<>();
+		for(Pawn p : obstacles) {
+			obs.add(p.getLocation());
+		}
+		return pathObstacles(beg, end, obs);
+	}
+	
+	public float getCorrectionFactor(Pawn pawn, Move move) {
+		/*if(pawn.getLocation().add(move).equals(getPawnData(pawn).getLastPosition())) {
+			return 1;
+		}*/
+		return 0;
+	}
+	
+	public List<PotencialAction> killActions(Set<Pawn> targets) {
+		List<PotencialAction> actions = new ArrayList<>();
 		for(Pawn target : targets) {
 			for(Vector dir : Utils.dirs) {
 				Vector p = target.getLocation().add(dir);
 				if(!game.isVoid(p)) {
 					if(target.getHealth() < 2) {
-						actions.add(new PredictedAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
+						actions.add(new PotencialAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
 					}
 					if(game.isVoid(target.getLocation().sub(dir))) {
-						actions.add(new PredictedAction(target.getStance(), p, Move.fromDirection(dir).getOpposite()));
-						actions.add(new PredictedAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
+						actions.add(new PotencialAction(target.getStance(), p, Move.fromDirection(dir).getOpposite()));
+						actions.add(new PotencialAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
 					} else if(game.isVoid(target.getLocation().sub(dir).sub(dir))) {
-						actions.add(new PredictedAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
+						Pawn w = game.getPawn(target.getLocation().sub(dir));
+						if(w == null || w.getTeam() != team) {
+							actions.add(new PotencialAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
+						}
 					}
 				}
 			}
@@ -198,13 +210,13 @@ public class GameContext {
 		return actions;
 	}
 	
-	public List<PredictedAction> hurtActions(Set<Pawn> targets) {
-		List<PredictedAction> actions = new ArrayList<>();
+	public List<PotencialAction> hurtActions(Set<Pawn> targets) {
+		List<PotencialAction> actions = new ArrayList<>();
 		for(Pawn target : targets) {
 			for(Vector dir : Utils.dirs) {
 				Vector p = target.getLocation().add(dir);
 				if(!game.isVoid(p)) {
-					actions.add(new PredictedAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
+					actions.add(new PotencialAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
 				}
 			}
 		}

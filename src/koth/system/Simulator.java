@@ -223,14 +223,14 @@ public final class Simulator {
                     ++turn;
                     // Check for idle game (to avoid infinite loop)
                     int sum = computeHealthSum(game);
-                    if (sum != lastHealthSum)
+                    if (sum != lastHealthSum) {
                         staleCount = 0;
-                    else if (++staleCount >= 100) { // TODO put this constant somewhere
-                    	
+                    } else if (++staleCount >= 100) { // TODO put this constant somewhere
                         game = new Game(game.getBoard(), new HashSet<Pawn>());
-                        System.out.println("Force draw, nothing happened for too long!");
+                        //System.out.println("Force draw, nothing happened for too long!");
                         return;
                     }
+                    lastHealthSum = sum;
                 }
             } while (game.getPawnCount(currentTeam) == 0);
         }

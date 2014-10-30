@@ -8,6 +8,7 @@ import koth.game.*;
 
 public class Herp implements AI {
 	private GameContext context;
+	private boolean printSt = true;
 
 	@Override
 	public void initialize(Game game, int team, Rules rules) {
@@ -21,20 +22,45 @@ public class Herp implements AI {
 		Set<Pawn> enemies = context.getEnemies();
 		Action action = computeMoves(context, context.killActions(enemies), actions);
 		if(action == null) {
-			action = computeMoves(context, context.hurtActions(enemies), actions);
+			List<? extends PotencialAction> acc = context.hurtActions(enemies);
+			//System.err.println(acc.size());
+			action = computeMoves(context, acc, actions);
 		}
 		if(action == null) {
 			action = reposition(context, enemies);
 		}
-		return action;
+		return stupidityFilter(action);
+	}
+	
+	private Action stupidityFilter(Action ac) {
+		if(ac != null && context.getGame().isVoid(ac.getPawn().getLocation().add(ac.getMove()))) {
+			//System.err.println("/!\\ WHAT ARE YOU DOING ?");
+			if(printSt) {
+				StackTraceElement[] st = (new Exception()).getStackTrace();
+				System.err.print("Stupid move:");
+				for(StackTraceElement trace : st) {
+					if(trace.getClassName().contains("gan_.Herp") && !trace.getMethodName().equals("stupidityFilter")) {
+						if(trace.getMethodName() == "play") {
+							System.err.println("");
+							break;
+						}
+						System.err.print("\t" + trace);
+					}
+					System.err.println("");
+				}
+				System.err.println(context.getGame());
+			}
+			return null;
+		}
+		return ac;
 	}
 
-	private Action computeMoves(GameContext context, List<? extends PredictedAction> actions, int actionPts) {
+	private Action computeMoves(GameContext context, List<? extends PotencialAction> actions, int actionPts) {
 		for(Pawn pawn : context.getPawns()) {
-			for(PawnAction action : Utils.toPawnAction(context, pawn, actions)) {
+			for(PawnActionSequence action : Utils.toPawnAction(context, pawn, actions)) {
 				int cost = action.getActionCost();
 				if(cost <= actionPts) {
-					return action.toAction();
+					return stupidityFilter(action.toAction());
 				}
 			}
 		}
@@ -59,9 +85,9 @@ public class Herp implements AI {
 			}
 		}
 		if(thisTurn[0].getLocation().manhattan(thisTurn[1].getLocation()) > context.getBoardSize().sum() / 4) {
-			return AaaattttTTTTTTAAAaaacccCCCKKKK(context, enemies);
+			return stupidityFilter(AaaattttTTTTTTAAAaaacccCCCKKKK(context, enemies));
 		}
-		return new Action(thisTurn[0], context.goToward(thisTurn[0], thisTurn[1]));
+		return stupidityFilter(new Action(thisTurn[0], context.goToward(thisTurn[0], thisTurn[1])));
 	}
 	
 	private Action AaaattttTTTTTTAAAaaacccCCCKKKK(GameContext context, Set<Pawn> enemies) {
@@ -82,7 +108,7 @@ public class Herp implements AI {
 				far = p;
 			}
 		}
-		return new Action(far, context.goToward(far.getLocation(), avg));
+		return stupidityFilter(new Action(far, context.goToward(far, enemy)));
 	}
 	
 	

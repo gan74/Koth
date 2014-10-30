@@ -175,7 +175,7 @@ public class Tournament implements Runnable {
                 if (threads != null)
                     throw new IllegalStateException();
                 running = true;
-                int units = 0; // Runtime.getRuntime().availableProcessors() - 1;
+                int units = 0; //Runtime.getRuntime().availableProcessors() - 1;
                 threads = new Thread[units];
                 for (int i = 0; i < threads.length; ++i) {
                     threads[i] = new Thread(create());
@@ -309,7 +309,7 @@ public class Tournament implements Runnable {
             }
         });
         frame.add(scroll);
-        frame.setSize(600, 600);
+        frame.setSize(1280, 726);
         frame.pack();
     }
 

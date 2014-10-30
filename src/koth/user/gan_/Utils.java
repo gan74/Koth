@@ -29,9 +29,9 @@ public class Utils {
 		return result;
 	}
 	
-	public static List<PawnAction> toPawnAction(GameContext context, Pawn pawn, List<? extends PredictedAction> lst) {
-		List<PawnAction> pa = new ArrayList<>();
-		for(PredictedAction p : lst) {
+	public static List<PawnActionSequence> toPawnAction(GameContext context, Pawn pawn, List<? extends PotencialAction> lst) {
+		List<PawnActionSequence> pa = new ArrayList<>();
+		for(PotencialAction p : lst) {
 			pa.add(p.toPawnAction(context, pawn));
 		}
 		Collections.sort(pa);
@@ -55,6 +55,14 @@ public class Utils {
 		}
 		return s;
 	} 
+	
+	public static <E> void reverse(ArrayList<E> lst) {
+		for(int i = 0; i != lst.size() / 2; i++) {
+			E tmp = lst.get(lst.size() - 1 - i);
+			lst.set(lst.size() - 1 - i, lst.get(i));
+			lst.set(i, tmp);
+		}
+	}
 	
 	public static String teamName(int t) {
 		switch(t) {

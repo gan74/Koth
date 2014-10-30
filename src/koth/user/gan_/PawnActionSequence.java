@@ -2,15 +2,15 @@ package koth.user.gan_;
 
 import koth.game.*;
 
-public class PawnAction implements Comparable<PawnAction> {
+public class PawnActionSequence implements Comparable<PawnActionSequence> {
 	
-	private PredictedAction action;
+	private PotencialAction action;
 	private Pawn pawn;
 	private GameContext context;
 	private int cost;
 	private float correction;
 	
-	public PawnAction(GameContext c, Pawn p, PredictedAction a) {
+	public PawnActionSequence(GameContext c, Pawn p, PotencialAction a) {
 		pawn = p;
 		action = a;
 		context = c;
@@ -39,7 +39,7 @@ public class PawnAction implements Comparable<PawnAction> {
 		return cost + correction;
 	}
 	
-	public PredictedAction getPredicted() {
+	public PotencialAction getPredicted() {
 		return action;
 	}
 	
@@ -55,7 +55,7 @@ public class PawnAction implements Comparable<PawnAction> {
 	}
 
 	@Override
-	public int compareTo(PawnAction o) {
+	public int compareTo(PawnActionSequence o) {
 		return -Float.compare(o.getCorrectedCost(), getCorrectedCost());
 	}
 
