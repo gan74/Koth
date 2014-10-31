@@ -19,15 +19,17 @@ public class Path implements Iterable<Move> {
 		for(int i = 1; i < waypoints.size(); i++) {
 			Vector beg = waypoints.get(i - 1);
 			Vector end = waypoints.get(i);
-			moves.add(Move.fromDirection(end.sub(beg)));
-		}
-		for(int i = 0; i != moves.size(); i++) {
-			Vector a = waypoints.get(i);
-			Vector b = waypoints.get(i + 1);
-			if(!a.add(moves.get(i)).equals(b)) {
-				System.err.println("ERROR : " + a + " + " + moves.get(i) + " != " + b);
+			Move move = Move.fromDirection(end.sub(beg));
+			if(move != Move.None) {
+				moves.add(move);
 			}
 		}
+	}
+	
+	public List<Vector> getWaypoints() {
+		ArrayList<Vector> v = new ArrayList<>();
+		v.addAll(waypoints);
+		return v;
 	}
 	
 	public int size() {
@@ -39,9 +41,7 @@ public class Path implements Iterable<Move> {
 		return moves.iterator();
 	}
 	
-	
 	public static Path emptyPath() {
 		return new Path(new ArrayList<Vector>());
 	}
-
 }

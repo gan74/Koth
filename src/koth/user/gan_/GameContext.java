@@ -54,7 +54,7 @@ public class GameContext {
 		return team;
 	}
 	
-	public Set<Pawn> getPawns() {
+	public Set<Pawn> getTeamPawns() {
 		return game.getPawns(team);
 	}
 	
@@ -69,7 +69,7 @@ public class GameContext {
 		return pawns;
 	}
 	
-	public Move goTo(Vector a, Vector b) {
+	/*public Move goTo(Vector a, Vector b) {
 		Vector dir = a.sub(b);
 		return Move.fromDirection(dir);
 	}
@@ -79,24 +79,11 @@ public class GameContext {
 	}
 	
 	public Move goToward(Vector a, Vector b) {
-		/*List<Vector> moves = path(a, b, game.getPawns());
-		ArrayList<Vector> m2 = new ArrayList<>();
-		m2.addAll(moves);
-		if(!moves.isEmpty()) {
-			Vector v = a;
-			while(v.equals(a) && !moves.isEmpty()) {
-				v = moves.get(moves.size() - 1);
-				moves.remove(moves.size() - 1);
-			}
-			if(!moves.isEmpty()) {
-				return goTo(a, v).getOpposite();
-			}
-		}*/
-		for(Move m : path(a, b, game.getPawns())) {
+		for(Move m : path(a, b, getTeamPawns())) {
 			return m;
 		}
 		return Move.None;//Move.fromDirection(a.sub(b)).getOpposite();
-	}
+	}*/
 	
 	public Path pathObstacles(Vector beg, Vector end, Set<Vector> obstacles) {
 		class PathData
@@ -167,9 +154,9 @@ public class GameContext {
 		}
 	}
 	
-	public Path path(Vector beg, Vector end) {
+	/*public Path path(Vector beg, Vector end) {
 		return pathObstacles(beg, end, new HashSet<Vector>());
-	}
+	}*/
 	
 	public Path path(Vector beg, Vector end, Set<Pawn> obstacles) {
 		Set<Vector> obs = new HashSet<>();

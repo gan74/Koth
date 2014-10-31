@@ -29,7 +29,7 @@ public class Utils {
 		return result;
 	}
 	
-	public static List<PawnActionSequence> toPawnAction(GameContext context, Pawn pawn, List<? extends PotencialAction> lst) {
+	public static List<PawnActionSequence> toPawnActionSequence(GameContext context, Pawn pawn, List<? extends PotencialAction> lst) {
 		List<PawnActionSequence> pa = new ArrayList<>();
 		for(PotencialAction p : lst) {
 			pa.add(p.toPawnAction(context, pawn));
@@ -64,7 +64,7 @@ public class Utils {
 		}
 	}
 	
-	public static String teamName(int t) {
+	public static String getTeamName(int t) {
 		switch(t) {
 		case 0: return "Red";
 		case 1: return "Blu";

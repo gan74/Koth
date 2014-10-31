@@ -38,8 +38,8 @@ public class Display implements Runnable {
         running = true;
         paused = false;
         key('=');
-        key('*');
-        key('*');
+       // key('*');
+       // key('*');
         camx = dcamx;
         camy = dcamy;
         camr = dcamr;

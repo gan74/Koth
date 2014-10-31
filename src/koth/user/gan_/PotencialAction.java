@@ -25,15 +25,6 @@ public class PotencialAction {
 		return move;
 	}
 	
-	public int getCost(GameContext context, Pawn p) {
-		Path path = context.path(p.getLocation(), pos);
-		int cost = path.size() * context.getRules().getMoveCost();
-		if(stance != p.getStance()) {
-			cost += context.getRules().getStanceCost();
-		}
-		return cost;
-	}
-	
 	public PawnActionSequence toPawnAction(GameContext c, Pawn p) {
 		return new PawnActionSequence(c, p, this);
 	}
