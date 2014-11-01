@@ -3,12 +3,12 @@ package koth.user.gan_;
 import koth.game.*;
 import koth.util.*;
 
-public class PotencialAction {
+public class PotentialAction {
 	private Stance stance;
 	private Vector pos;
 	private Move move;
 	
-	public PotencialAction(Stance s, Vector p, Move m) {
+	public PotentialAction(Stance s, Vector p, Move m) {
 		stance = s;
 		pos = p;
 		move = m;
@@ -27,7 +27,7 @@ public class PotencialAction {
 	}
 	
 	public ActionSequence toPawnAction(GameContext c, Pawn p) {
-		return new ActionSequence(c, p, this);
+		return new ActionSequence(c, c.getGame().getPawn(p), this);
 	}
 	
 	@Override

@@ -31,9 +31,9 @@ public class Utils {
 		return result;
 	}
 	
-	public static List<ActionSequence> toPawnActionSequence(GameContext context, Pawn pawn, List<? extends PotencialAction> lst) {
+	public static List<ActionSequence> toPawnActionSequence(GameContext context, Pawn pawn, List<? extends PotentialAction> lst) {
 		List<ActionSequence> pa = new ArrayList<>();
-		for(PotencialAction p : lst) {
+		for(PotentialAction p : lst) {
 			pa.add(p.toPawnAction(context, pawn));
 		}
 		Collections.sort(pa);

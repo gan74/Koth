@@ -18,7 +18,7 @@ public class ActionSequence implements Comparable<ActionSequence>, Iterable<Acti
 		actions.addAll(ac);
 	}
 	
-	public ActionSequence(GameContext c, Pawn pawn, PotencialAction a) {
+	public ActionSequence(GameContext c, Pawn pawn, PotentialAction a) {
 		context = c;
 		pawn = context.getGame().getPawn(pawn);
 		Path path = context.path(pawn.getLocation(), a.getPos(), context.getTeamPawns());

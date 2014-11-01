@@ -35,14 +35,6 @@ public class GameContext {
 		}
 	}
 	
-	public float getHurtCorrection() {
-		return 0.25f;
-	}
-	
-	public float getDeathCorrection() {
-		return 2;
-	}
-	
 	public Rules getRules() {
 		return rules;
 	}
@@ -69,22 +61,6 @@ public class GameContext {
 		}
 		return pawns;
 	}
-	
-	/*public Move goTo(Vector a, Vector b) {
-		Vector dir = a.sub(b);
-		return Move.fromDirection(dir);
-	}
-	
-	public Move goToward(Pawn a, Pawn b) {
-		return goToward(a.getLocation(), b.getLocation());
-	}
-	
-	public Move goToward(Vector a, Vector b) {
-		for(Move m : path(a, b, getTeamPawns())) {
-			return m;
-		}
-		return Move.None;//Move.fromDirection(a.sub(b)).getOpposite();
-	}*/
 	
 	public Path pathObstacles(Vector beg, Vector end, Set<Vector> obstacles) {
 		class PathData
@@ -155,10 +131,6 @@ public class GameContext {
 		}
 	}
 	
-	/*public Path path(Vector beg, Vector end) {
-		return pathObstacles(beg, end, new HashSet<Vector>());
-	}*/
-	
 	public Path path(Vector beg, Vector end, Set<Pawn> obstacles) {
 		Set<Vector> obs = new HashSet<>();
 		for(Pawn p : obstacles) {
@@ -167,29 +139,22 @@ public class GameContext {
 		return pathObstacles(beg, end, obs);
 	}
 	
-	public float getCorrectionFactor(Pawn pawn, Move move) {
-		/*if(pawn.getLocation().add(move).equals(getPawnData(pawn).getLastPosition())) {
-			return 1;
-		}*/
-		return 0;
-	}
-	
-	public List<PotencialAction> killActions(Set<Pawn> targets) {
-		List<PotencialAction> actions = new ArrayList<>();
+	public List<PotentialAction> killActions(Set<Pawn> targets) {
+		List<PotentialAction> actions = new ArrayList<>();
 		for(Pawn target : targets) {
 			for(Vector dir : Utils.dirs) {
 				Vector p = target.getLocation().add(dir);
 				if(!game.isVoid(p)) {
 					if(target.getHealth() < 2) {
-						actions.add(new PotencialAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
+						actions.add(new PotentialAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
 					}
 					if(game.isVoid(target.getLocation().sub(dir))) {
-						actions.add(new PotencialAction(target.getStance(), p, Move.fromDirection(dir).getOpposite()));
-						actions.add(new PotencialAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
+						actions.add(new PotentialAction(target.getStance(), p, Move.fromDirection(dir).getOpposite()));
+						actions.add(new PotentialAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
 					} else if(game.isVoid(target.getLocation().sub(dir).sub(dir))) {
 						Pawn w = game.getPawn(target.getLocation().sub(dir));
 						if(w == null || w.getTeam() != team) {
-							actions.add(new PotencialAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
+							actions.add(new PotentialAction(target.getStance().getWeak(), p, Move.fromDirection(dir).getOpposite()));
 						}
 					}
 				}
@@ -198,13 +163,13 @@ public class GameContext {
 		return actions;
 	}
 	
-	public List<PotencialAction> hurtActions(Set<Pawn> targets) {
-		List<PotencialAction> actions = new ArrayList<>();
+	public List<PotentialAction> hurtActions(Set<Pawn> targets) {
+		List<PotentialAction> actions = new ArrayList<>();
 		for(Pawn target : targets) {
 			for(Vector dir : Utils.dirs) {
 				Vector p = target.getLocation().add(dir);
 				if(!game.isVoid(p)) {
-					actions.add(new PotencialAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
+					actions.add(new PotentialAction(target.getStance().getStrong(), p, Move.fromDirection(dir).getOpposite()));
 				}
 			}
 		}
@@ -222,7 +187,4 @@ public class GameContext {
 		}
 		return pd;
 	}
-	
-	
-	
 }
