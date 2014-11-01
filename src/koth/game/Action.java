@@ -1,6 +1,8 @@
 
 package koth.game;
 
+import koth.util.Vector;
+
 /**
  * Represent a single action (move and stance modifier) for a given pawn.
  */
@@ -9,6 +11,8 @@ public final class Action {
     private final Pawn pawn;
     private final Stance stance;
     private final Move move;
+
+    // TODO add text to say =D
 
     /**
      * Create a new action.
@@ -54,6 +58,13 @@ public final class Action {
      */
     public Move getMove() {
         return move;
+    }
+
+    /**
+     * Get pawn location after movement.
+     */
+    public Vector getDestination() {
+        return pawn.getLocation().add(move);
     }
 
     /**

@@ -1,5 +1,7 @@
 
-package koth.game;
+package koth.util;
+
+import koth.game.Move;
 
 import java.util.Random;
 

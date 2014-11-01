@@ -37,14 +37,14 @@ public final class Rules {
      * Create default rules for <code>N</code> pawns (<code>N+1</code> actions, <code>N+2</code> health points).
      */
     public Rules(int pawns) {
-        this(pawns, pawns == 1 ? 8 : pawns + 1, pawns + 2);
+        this(pawns, pawns == 1 ? 8 : (pawns + 1), pawns + 2);
     }
 
     /**
      * Create default rules (3 pawns).
      */
     public Rules() {
-        this(3);
+        this(4);
     }
 
     /**

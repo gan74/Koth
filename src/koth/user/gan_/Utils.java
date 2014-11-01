@@ -8,6 +8,8 @@ import java.util.Random;
 import java.util.Set;
 
 import koth.game.*;
+import koth.util.*;
+
 public class Utils {
 	
 	private Utils() {
@@ -29,8 +31,8 @@ public class Utils {
 		return result;
 	}
 	
-	public static List<PawnActionSequence> toPawnActionSequence(GameContext context, Pawn pawn, List<? extends PotencialAction> lst) {
-		List<PawnActionSequence> pa = new ArrayList<>();
+	public static List<ActionSequence> toPawnActionSequence(GameContext context, Pawn pawn, List<? extends PotencialAction> lst) {
+		List<ActionSequence> pa = new ArrayList<>();
 		for(PotencialAction p : lst) {
 			pa.add(p.toPawnAction(context, pawn));
 		}

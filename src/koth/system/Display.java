@@ -3,11 +3,15 @@ package koth.system;
 
 import koth.game.Board;
 import koth.game.Action;
+import koth.game.Pawn;
+import koth.util.Vector;
 import koth.user.Human;
+import koth.util.Renderer;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferStrategy;
 import java.util.Set;
 
@@ -17,12 +21,14 @@ public class Display implements Runnable {
 
     private final Simulator simulator;
     private final Animator animator;
-    private koth.util.Renderer renderer;
+    private Renderer renderer;
 
     private volatile boolean running, paused;
     private float camx, camy, camr;
     private float dcamx, dcamy, dcamr;
     private volatile float speed;
+    private boolean waiting;
+    private Pawn pawn;
     private Action action;
 
     private JFrame frame;
@@ -33,16 +39,16 @@ public class Display implements Runnable {
         // Create simulation components
         this.simulator = simulator;
         animator = new Animator(simulator.getGame());
-        renderer = new koth.util.Renderer.Isometric();
+        renderer = new Renderer.Isometric();
         // Initialize control variables
         running = true;
         paused = false;
         key('=');
-       // key('*');
-       // key('*');
         camx = dcamx;
         camy = dcamy;
         camr = dcamr;
+        waiting = false;
+        pawn = null;
         action = null;
         // Create window
         frame = new JFrame("Match");
@@ -86,7 +92,7 @@ public class Display implements Runnable {
     private void key(char c) {
         switch (c) {
             // Use ESCAPE to exit
-            case 27:
+            case KeyEvent.VK_ESCAPE:
                 running = false;
                 // TODO interrupt?
                 break;
@@ -97,10 +103,10 @@ public class Display implements Runnable {
             // Use TAB to switch view mode
             case '\t':
                 synchronized (lock) {
-                    if (renderer instanceof koth.util.Renderer.Isometric)
-                        renderer = new koth.util.Renderer.Orthogonal();
+                    if (renderer instanceof Renderer.Isometric)
+                        renderer = new Renderer.Orthogonal();
                     else
-                        renderer = new koth.util.Renderer.Isometric();
+                        renderer = new Renderer.Isometric();
                 }
                 break;
             // Use + to zoom
@@ -140,20 +146,46 @@ public class Display implements Runnable {
     }
 
     private void mouse(int x, int y, int button) {
-        synchronized (lock) {
-            switch (button) {
-                // Left button to interact
-                case MouseEvent.BUTTON1:
-                    // TODO
-                    break;
-                // Right button to move camera
-                case MouseEvent.BUTTON3:
+        switch (button) {
+            // Left button to interact
+            case MouseEvent.BUTTON1:
+                synchronized (lock) {
+                    if (waiting) {
+                        if (pawn == null) {
+                            // If there is no pawn selected, check if we clicked one
+                            Point.Float p = renderer.unproject(x, y, 0);
+                            Vector l = new Vector(Math.round(p.x), Math.round(p.y));
+                            Pawn pawn = simulator.getGame().getPawn(l);
+                            if (pawn != null && pawn.getTeam() == simulator.getTeam()) {
+                                this.pawn = pawn;
+                                System.out.println(this.pawn);
+                            }
+                        } else {
+                            // There already is a selected pawn, check if we clicked on the HUD
+                            pawn = null;
+                            // TODO check for interface click and play (or cancel)
+                            waiting = false;
+                            lock.notifyAll();
+                        }
+                    }
+                }
+                break;
+            // Right button to move camera
+            case MouseEvent.BUTTON3:
+                synchronized (lock) {
                     Point.Float p = renderer.unproject(x, y, 0);
                     dcamx = p.x;
                     dcamy = p.y;
                     break;
+                }
             }
-        }
+    }
+
+    private void drawString(Graphics2D g, String txt, float cx, float cy, int h, int v) {
+        Rectangle2D rect = g.getFontMetrics().getStringBounds(txt, g);
+        cx -= rect.getWidth() * (1 - h) * 0.5f;
+        cy += rect.getHeight() * (1 - v) * 0.5f;
+        g.drawString(txt, cx, cy);
     }
 
     private void animate(float dt, Graphics2D g, int w, int h) {
@@ -170,15 +202,36 @@ public class Display implements Runnable {
         g.fillRect(0, 0, w, h);
         // Compute and paint new frame
         animator.step(dt);
-        Set<koth.util.Renderer.Cube> cubes = animator.getCubes();
+        Set<Renderer.Cube> cubes = animator.getCubes();
         synchronized (lock) {
             renderer.setCubes(cubes);
             renderer.setCamera(camx, camy, 0, camr);
             renderer.setViewport(w, h);
             renderer.paint(g);
         }
+        // Check for human player
+        synchronized (lock) {
+            if (pawn != null) {
+                // If there is a pawn, draw interactive HUD
+                // TODO draw interactive HUD
+                Point.Float p = renderer.project(pawn.getLocation().getX(), pawn.getLocation().getY(), 0.5f);
+                g.setColor(Color.ORANGE);
+                g.drawOval((int)p.x-4 , (int)p.y-4, 8,8);
+            }
+        }
         // Draw HUD
-        // TODO HUD (paused, current team/actions, turn...)
+        synchronized (lock) {
+            // Print info about current turn
+            g.setColor(animator.getTeamColor(simulator.getTeam()));
+            g.setFont(g.getFont().deriveFont(20.0f));
+            drawString(g, "Turn " + simulator.getTurn() + ", team " + simulator.getTeam() + " (" + simulator.getPoints() + " remaining)", 10, 10, 1, -1);
+            // Show if game is paused
+            if (paused) {
+                g.setColor(Color.WHITE);
+                g.setFont(g.getFont().deriveFont(100.0f));
+                drawString(g, "PAUSED", w / 2, h / 2, 0, 0);
+            }
+        }
     }
 
     private void animate(float dt) {
@@ -195,7 +248,6 @@ public class Display implements Runnable {
             }
             strategy.show();
         } while (strategy.contentsLost());
-        // TODO vsync with Toolkit.getDefaultToolkit().sync()?
     }
 
     private void animate() {
@@ -230,11 +282,21 @@ public class Display implements Runnable {
             // If it is a human, wait until graphical interaction
             if (simulator.getAi() instanceof Human) {
                 Human human = (Human)simulator.getAi();
-                Action action = null;
                 synchronized (lock) {
-                    // TODO wait on event
+                    waiting = true;
+                    pawn = null;
+                    action = null;
+                    while (waiting && running) {
+                        try {
+                            lock.wait(100);
+                        } catch (InterruptedException e) {}
+                    }
+                    System.out.println("Human played " + action);
+                    human.set(action);
+                    waiting = false;
+                    pawn = null;
+                    action = null;
                 }
-                human.set(action);
             }
             // Play and register events
             simulator.play(animator);

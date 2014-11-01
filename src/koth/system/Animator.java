@@ -3,7 +3,9 @@ package koth.system;
 
 import koth.game.*;
 import koth.util.Renderer;
+import koth.util.Vector;
 
+import java.awt.*;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -135,20 +137,13 @@ public class Animator implements Game.Listener {
 
     protected void healthbar(Set<Renderer.Cube> cubes, int health, int team, float px, float py, float pz) {
         // TODO Animator needs to handle more than 6 hp?
-        // TODO Animator needs to support more than 2 teams
         // TODO Animator fades hp cubes out when damaged?
         final float size = 0.1f, offset = 0.15f;
-        float tr, tg, tb;
-        if (team == 0) {
-            tr = 0.8f;
-            tg = tb = 0.2f;
-        } else {
-            tr = tg = 0.2f;
-            tb = 0.8f;
-        }
+        Color c = getTeamColor(team);
         for (int i = 0; i < health; ++i) {
             float delta = (i - (health - 1) * 0.5f) * offset;
-            cubes.add(new Renderer.Cube(px + delta, py, pz + 0.5f, size, size, size, tr, tg, tb));
+            cubes.add(new Renderer.Cube(px + delta, py, pz + 0.5f, size, size, size,
+                c.getRed() / 255.0f, c.getGreen() / 255.0f, c.getBlue() / 255.0f));
         }
     }
 
@@ -191,6 +186,12 @@ public class Animator implements Game.Listener {
     protected void board(Set<Renderer.Cube> cubes, Board board) {
         for (Vector l : board.getTiles())
             tile(cubes, l);
+    }
+
+    public Color getTeamColor(int index) {
+        float[] hs = new float[]{0, 0.666f, 0.333f, 0.1666f, 0.5f};
+        float h = hs[index];
+        return Color.getHSBColor(h, 1, 0.7f);
     }
 
 }

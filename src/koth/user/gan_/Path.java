@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import koth.game.*;
+import koth.util.*;
 
 public class Path implements Iterable<Move> {
 	

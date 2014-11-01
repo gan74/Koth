@@ -2,7 +2,7 @@
 package koth.system;
 
 import koth.game.*;
-import koth.game.Vector;
+import koth.util.Vector;
 import koth.util.ClassManager;
 
 import java.util.*;
@@ -166,11 +166,10 @@ public final class Simulator {
             // TODO sandbox that in another thread (with a timeout)
             action = ai.play(game, currentPoints);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             //System.err.println(currentTeam + " (" + ai + ") failed to play!");
             action = null;
         }
-        //System.err.println("<");
         // Apply action (if enough points)
         if (action != null) {
             Pawn pawn = game.getPawn(action.getPawn());
@@ -200,13 +199,11 @@ public final class Simulator {
                 } else {
                     // Execute movement
                     //System.out.println(action);
-
                     game = game.updated(action, listener);
                     currentPoints -= cost;
                     history.add(action);
                     // Check for end
                     if (game.isFinished()) {
-
                         //System.out.println("Game finished (" + game.getWinner() + " wins)");
                         return;
                     }
@@ -223,9 +220,9 @@ public final class Simulator {
                     ++turn;
                     // Check for idle game (to avoid infinite loop)
                     int sum = computeHealthSum(game);
-                    if (sum != lastHealthSum) {
+                    if (sum != lastHealthSum)
                         staleCount = 0;
-                    } else if (++staleCount >= 100) { // TODO put this constant somewhere
+                    else if (++staleCount >= 100) { // TODO put this constant somewhere
                         game = new Game(game.getBoard(), new HashSet<Pawn>());
                         //System.out.println("Force draw, nothing happened for too long!");
                         return;

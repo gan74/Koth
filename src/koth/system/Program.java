@@ -26,10 +26,11 @@ public class Program {
         for (String name : generators.keySet())
             System.out.println("  " + name);
         Map<String, ClassManager.Factory<AI>> ais = ClassManager.getSubclasses(AI.class, "koth.user");
-        ais.remove("Human");
         System.out.println(ais.size() + " AI(s) found:");
         for (String name : ais.keySet())
             System.out.println("  " + name);
+        
+        ais.remove("Human");
 
         // Create and launch simulation
         Simulator simulator = Configurator.show(null, generators.values(), ais.values());

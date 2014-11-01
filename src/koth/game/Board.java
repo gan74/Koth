@@ -1,6 +1,8 @@
 
 package koth.game;
 
+import koth.util.Vector;
+
 import java.util.*;
 
 /**

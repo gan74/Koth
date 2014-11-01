@@ -2,7 +2,7 @@
 package koth.user.jlb;
 
 import koth.game.*;
-import koth.game.Vector;
+import koth.util.Vector;
 
 import java.util.*;
 

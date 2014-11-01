@@ -1,6 +1,8 @@
 
 package koth.game;
 
+import koth.util.Vector;
+
 /**
  * Store informations about a pawn.
  * A pawn is uniquely defined by a team and an id (i.e. two pawns are equals if they have the same teams/ids).

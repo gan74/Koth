@@ -1,6 +1,8 @@
 
 package koth.game;
 
+import koth.util.Vector;
+
 import java.util.*;
 
 /**
@@ -129,6 +131,15 @@ public final class Game {
     public boolean hasPawn(Vector location) {
         return getPawn(location) != null;
     }
+
+    /**
+     * Get whether this location is free (no pawn, no hole).
+     */
+    public boolean isFree(Vector location) {
+        return isTile(location) && !hasPawn(location);
+    }
+
+    // TODO get ennemies
 
     /**
      * Get a mapping between team ids and pawns.

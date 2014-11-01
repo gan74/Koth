@@ -1,6 +1,12 @@
 
 package koth.game;
 
+import koth.util.Vector;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Represent a direction, for instance used to describe a movement.
  */
@@ -34,6 +40,8 @@ public enum Move {
     private Move opposite;
     private Vector delta;
 
+    private static List<Move> all, nonzeros;
+
     static {
         None.opposite = None;
         West.opposite = East;
@@ -45,6 +53,8 @@ public enum Move {
         North.delta = new Vector(0, 1);
         East.delta = new Vector(1, 0);
         South.delta = new Vector(0, -1);
+        all = Collections.unmodifiableList(Arrays.asList(None, West, North, East, South));
+        nonzeros = Collections.unmodifiableList(Arrays.asList(West, North, East, South));
     }
 
     /**
@@ -93,6 +103,20 @@ public enum Move {
      */
     public int toInt() {
         return ordinal();
+    }
+
+    /**
+     * Get all moves.
+     */
+    public static List<Move> getAll() {
+        return all;
+    }
+
+    /**
+     * Get West, North, East and South.
+     */
+    public static List<Move> getNonzeros() {
+        return nonzeros;
     }
 
 }

@@ -3,7 +3,7 @@ package koth.user.jlb;
 
 import koth.game.Board;
 import koth.game.Generator;
-import koth.game.Vector;
+import koth.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashSet;

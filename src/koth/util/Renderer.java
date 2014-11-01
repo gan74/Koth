@@ -210,8 +210,8 @@ public abstract class Renderer implements Comparator<Renderer.Cube> {
         public Point.Float project(float x, float y, float z) {
             final float s = w < h ? w / cr : h / cr;
             return new Point.Float(
-                (cx - x - cy + y) * EX * s,
-                (cx - x + cy - y) * EY * s - (z - cz) * s
+                (cx - x - cy + y) * EX * s + w * 0.5f,
+                (cx - x + cy - y) * EY * s - (z - cz) * s + h * 0.5f
             );
         }
 

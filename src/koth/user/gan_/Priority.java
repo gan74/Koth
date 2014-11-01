@@ -17,6 +17,6 @@ public enum Priority {
 	
 	
 	public int clamped(int actions) {
-		return Math.min(1, (int)Math.ceil(actions * clampFactor));
+		return Math.max(1, (int)Math.ceil(actions * clampFactor));
 	}
 }

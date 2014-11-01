@@ -1,6 +1,7 @@
 package koth.user.gan_;
 
-import koth.game.Vector;
+import koth.game.*;
+import koth.util.*;
 
 public class PawnData {
 	public Vector[] lastPos;

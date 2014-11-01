@@ -1,10 +1,10 @@
 package koth.user.gan_;
 
 public class PrioritizedActionSequence {
-	private PawnActionSequence seq;
+	private ActionSequence seq;
 	private Priority prio;
 	
-	public PrioritizedActionSequence(PawnActionSequence s, Priority p) {
+	public PrioritizedActionSequence(ActionSequence s, Priority p) {
 		prio = p;
 		seq = s;
 	}
@@ -13,7 +13,7 @@ public class PrioritizedActionSequence {
 		return prio;
 	}
 	
-	public PawnActionSequence getActionSequence() {
+	public ActionSequence getActionSequence() {
 		return seq;
 	}
 }

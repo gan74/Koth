@@ -1,6 +1,10 @@
 
 package koth.game;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Represent a stance, for instance used to describe a pawn status.
  */
@@ -20,6 +24,8 @@ public enum Stance {
      * Scissors stance, which beats paper and is beaten by rock.
      */
     Scissors;
+
+    private static final List<Stance> all = Collections.unmodifiableList(Arrays.asList(Rock, Paper, Scissors));
 
     /**
      * Get the associated weak stance (the one which is beated by current stance).
@@ -61,4 +67,10 @@ public enum Stance {
         return ordinal();
     }
 
+    /**
+     * Get all stances.
+     */
+    public static List<Stance> getAll() {
+        return all;
+    }
 }

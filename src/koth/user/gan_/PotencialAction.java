@@ -1,6 +1,7 @@
 package koth.user.gan_;
 
 import koth.game.*;
+import koth.util.*;
 
 public class PotencialAction {
 	private Stance stance;
@@ -25,8 +26,8 @@ public class PotencialAction {
 		return move;
 	}
 	
-	public PawnActionSequence toPawnAction(GameContext c, Pawn p) {
-		return new PawnActionSequence(c, p, this);
+	public ActionSequence toPawnAction(GameContext c, Pawn p) {
+		return new ActionSequence(c, p, this);
 	}
 	
 	@Override

@@ -17,6 +17,7 @@ public class Configurator extends JPanel {
 
     private JComboBox first, second, generators;
 
+    @SuppressWarnings("unchecked")
     public Configurator(Collection<ClassManager.Factory<AI>> ais, Collection<ClassManager.Factory<Generator>> generators) {
         if (generators == null || ais == null || generators.contains(null) || ais.contains(null))
             throw new NullPointerException();
