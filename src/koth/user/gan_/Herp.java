@@ -33,12 +33,6 @@ public class Herp implements AI {
 		if(actionSequence == null) {
 			tryKill(actions);
 		}
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		return next();
 	}
 	
